@@ -1,8 +1,6 @@
 package com.haoyuan.aicodingplatform.service;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollUtil;
-import com.haoyuan.aicodingplatform.model.dto.UserLoginRequest;
+
 import com.haoyuan.aicodingplatform.model.dto.UserQueryRequest;
 import com.haoyuan.aicodingplatform.model.vo.LoginUserVO;
 import com.haoyuan.aicodingplatform.model.vo.UserVO;
@@ -11,10 +9,8 @@ import com.mybatisflex.core.service.IService;
 import com.haoyuan.aicodingplatform.model.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.net.http.HttpRequest;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 /**
  * 用户 服务层。

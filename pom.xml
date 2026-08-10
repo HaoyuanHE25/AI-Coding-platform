@@ -91,6 +91,24 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-aspectj</artifactId>
 		</dependency>
+		<!-- LangChain4j: Spring Boot 4 专用 starter
+		     - langchain4j-open-ai-spring-boot4-starter: 自动装配 OpenAiChatModel
+		     - langchain4j-spring-boot4-starter: 提供 AiServices 运行时所需的 invocationContext 等基础设施 -->
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-open-ai-spring-boot4-starter</artifactId>
+			<version>1.18.1-beta28</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-spring-boot4-starter</artifactId>
+			<version>1.18.1-beta28</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-reactor</artifactId>
+			<version>1.1.0-beta7</version>
+		</dependency>
 
 	</dependencies>
 

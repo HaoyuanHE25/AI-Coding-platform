@@ -1,9 +1,13 @@
 import axios from 'axios'
 import { message } from 'ant-design-vue'
+import { API_BASE_URL } from '@/config/env'
+
+// 公开页面路径（不需要登录即可访问的页面）
+const PUBLIC_PATHS = ['/', '/user/login', '/user/register', '/app/detail']
 
 // 创建 Axios 实例
 const myAxios = axios.create({
-  baseURL: 'http://localhost:8123/api',
+  baseURL: API_BASE_URL,
   timeout: 60000,
   withCredentials: true,
 })
@@ -26,10 +30,18 @@ myAxios.interceptors.response.use(
     const { data } = response
     // 未登录
     if (data.code === 40100) {
-      // 不是获取用户信息的请求，并且用户目前不是已经在用户登录页面，则跳转到登录页面
+      const currentPath = window.location.pathname
+      // 检查当前是否在公开页面
+      const isPublicPage = PUBLIC_PATHS.some(
+        (p) => currentPath === p || currentPath.startsWith(p + '/'),
+      )
+      // 获取请求配置中是否标记了跳过鉴权重定向
+      const skipRedirect = (response.config as any)?.skipAuthRedirect
+
       if (
         !response.request.responseURL.includes('user/get/login') &&
-        !window.location.pathname.includes('/user/login')
+        !isPublicPage &&
+        !skipRedirect
       ) {
         message.warning('请先登录')
         window.location.href = `/user/login?redirect=${window.location.href}`

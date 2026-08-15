@@ -30,7 +30,7 @@ import { reactive } from 'vue'
 import { message } from 'ant-design-vue'
 import { userLogin } from '@/api/userController'
 import { useLoginUserStore } from '@/stores/LoginUser'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const formState = reactive<API.UserLoginRequest>({
   userAccount: '',
@@ -39,6 +39,16 @@ const formState = reactive<API.UserLoginRequest>({
 
 const loginUserStore = useLoginUserStore()
 const router = useRouter()
+const route = useRoute()
+
+/** 仅允许站内相对路径回跳，避免开放重定向 */
+const resolveRedirect = () => {
+  const redirect = route.query.redirect
+  if (typeof redirect === 'string' && redirect.startsWith('/') && !redirect.startsWith('//')) {
+    return redirect
+  }
+  return '/'
+}
 
 /**
  * 用户登录提交
@@ -50,10 +60,13 @@ const handleSubmit = async (values: any) => {
   if (res.data.code === 0 && res.data.data) {
     await loginUserStore.fetchLoginUser()
     message.success('登录成功')
-    router.push({
-      path: '/',
-      replace: true,
-    })
+    const target = resolveRedirect()
+    const prompt = route.query.prompt
+    if (target === '/' && typeof prompt === 'string' && prompt.trim()) {
+      await router.replace({ path: '/', query: { prompt } })
+      return
+    }
+    await router.replace(target)
   } else {
     message.error('登录失败：' + res.data.message)
   }

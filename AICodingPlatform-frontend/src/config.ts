@@ -40,7 +40,12 @@ export const siteConfig: SiteConfig = {
  */
 export const menuItems: MenuItem[] = [
   { key: 'home', label: '首页', path: '/' },
-  { key: 'about', label: '关于', path: '/about' },
+  {
+    key: 'appManage',
+    label: '应用管理',
+    path: '/admin/appManage',
+    meta: { access: ACCESS_ENUM.ADMIN },
+  },
   {
     key: 'userManage',
     label: '用户管理',

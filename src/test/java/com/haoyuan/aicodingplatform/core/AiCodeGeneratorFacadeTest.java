@@ -2,6 +2,7 @@ package com.haoyuan.aicodingplatform.core;
 
 import com.haoyuan.aicodingplatform.model.enums.CodeGenTypeEnum;
 import jakarta.annotation.Resource;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import reactor.core.publisher.Flux;
@@ -19,7 +20,7 @@ class AiCodeGeneratorFacadeTest {
 
     @Test
     void generateAndSaveCode() {
-        File dir = aiCodeGeneratorFacade.generateAndSaveCode("生成一个登陆页面，不超20行代码", CodeGenTypeEnum.HTML);
+        File dir = aiCodeGeneratorFacade.generateAndSaveCode("生成一个登陆页面，不超20行代码", CodeGenTypeEnum.HTML, 1L);
         assertNotNull(dir);
         assertTrue(dir.isDirectory(), "返回的路径应该是一个目录");
         File[] files = dir.listFiles();
@@ -35,7 +36,7 @@ class AiCodeGeneratorFacadeTest {
     void generateAndSaveCodeStream() {
         Flux<String> codeStream = aiCodeGeneratorFacade.generateAndSaveCodeStream(
                 "任务管理网站：支持添加、删除、标记完成任务，响应式设计",
-                CodeGenTypeEnum.MULTI_FILE);
+                CodeGenTypeEnum.MULTI_FILE, 1L);
         List<String> chunks = codeStream.collectList().block();
         assertNotNull(chunks);
         assertFalse(chunks.isEmpty(), "流式结果不应为空");
@@ -76,4 +77,18 @@ class AiCodeGeneratorFacadeTest {
         System.out.println("style.css:  " + styleCss.length() + " bytes");
         System.out.println("script.js:  " + scriptJs.length() + " bytes");
     }
+
+    @Test
+    void generateVueProjectCodeStream() {
+        Flux<String> codeStream = aiCodeGeneratorFacade.generateAndSaveCodeStream(
+                "简单的任务记录网站，总代码量不超过 200 行",
+                CodeGenTypeEnum.VUE_PROJECT, 1L);
+        // 阻塞等待所有数据收集完成
+        List<String> result = codeStream.collectList().block();
+        // 验证结果
+        Assertions.assertNotNull(result);
+        String completeContent = String.join("", result);
+        Assertions.assertNotNull(completeContent);
+    }
+
 }

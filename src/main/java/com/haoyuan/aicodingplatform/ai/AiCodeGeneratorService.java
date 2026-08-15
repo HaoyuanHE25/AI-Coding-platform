@@ -1,5 +1,6 @@
 package com.haoyuan.aicodingplatform.ai;
 
+import dev.langchain4j.service.MemoryId;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import reactor.core.publisher.Flux;
@@ -43,7 +44,7 @@ public interface AiCodeGeneratorService {
      * 流式生成 HTML 单页代码
      *
      * @param userMessage 用户对网站的描述
-     * @return 模型按 SSE/分块推送的字符串序列，完整拼接后等价于 {@link #generateHtmlCode(String)}
+     * @return 模型按 SSE/分块推送的字符串序列
      */
     @SystemMessage(fromResource = "prompt/codegen-html-system-prompt.txt")
     Flux<String> generateHtmlCodeStream(@UserMessage String userMessage);
@@ -56,4 +57,15 @@ public interface AiCodeGeneratorService {
      */
     @SystemMessage(fromResource = "prompt/codegen-multi-file-system-prompt.txt")
     Flux<String> generateMultiFileCodeStream(@UserMessage String userMessage);
+
+
+    /**
+     * 生成 Vue 项目代码（流式）
+     *
+     * @param userMessage 用户消息
+     * @return 生成过程的流式响应
+     */
+    @SystemMessage(fromResource = "prompt/codegen-vue-project-system-prompt.txt")
+    Flux<String> generateVueProjectCodeStream(@MemoryId long appId, @UserMessage String userMessage);
+
 }

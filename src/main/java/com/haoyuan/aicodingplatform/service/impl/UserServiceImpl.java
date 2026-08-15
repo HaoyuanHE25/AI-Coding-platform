@@ -5,7 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.haoyuan.aicodingplatform.exception.BusinessException;
 import com.haoyuan.aicodingplatform.exception.ErrorCode;
-import com.haoyuan.aicodingplatform.model.dto.UserQueryRequest;
+import com.haoyuan.aicodingplatform.model.dto.user.UserQueryRequest;
 import com.haoyuan.aicodingplatform.model.enums.UserRoleEnum;
 import com.haoyuan.aicodingplatform.model.vo.LoginUserVO;
 import com.haoyuan.aicodingplatform.model.vo.UserVO;

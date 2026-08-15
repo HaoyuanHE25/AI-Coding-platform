@@ -41,11 +41,19 @@ public class HtmlCodeParser implements CodeParser<HtmlCodeResult> {
 
         if (htmlCode != null && !htmlCode.trim().isEmpty()) {
             result.setHtmlCode(htmlCode.trim());
-        } else {
-            // 最终兜底：返回全部原文
+        } else if (looksLikeHtml(codeContent)) {
             result.setHtmlCode(codeContent.trim());
         }
         return result;
+    }
+
+    private boolean looksLikeHtml(String content) {
+        if (content == null) return false;
+        String lower = content.toLowerCase();
+        return lower.contains("<!doctype html")
+                || lower.contains("<html")
+                || lower.contains("<head")
+                || lower.contains("<body");
     }
 
     private String extractHtmlByFence(String content) {

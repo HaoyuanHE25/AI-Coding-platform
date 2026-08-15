@@ -32,12 +32,57 @@ const router = createRouter({
 
     {
       path: '/admin/userManage',
-      name: '管理员管理',
+      name: '用户管理',
       component: () => import('@/pages/admin/UserManagePage.vue'),
       meta: {
         access: ACCESS_ENUM.ADMIN,
       },
     },
+
+    {
+      path: '/admin/appManage',
+      name: '应用管理',
+      component: () => import('@/pages/admin/AppManagePage.vue'),
+      meta: {
+        access: ACCESS_ENUM.ADMIN,
+      },
+    },
+
+    {
+      path: '/admin/chatManage',
+      name: '对话管理',
+      component: () => import('@/pages/admin/ChatManagePage.vue'),
+      meta: {
+        access: ACCESS_ENUM.ADMIN,
+      },
+    },
+
+    {
+      path: '/app/chat/:appId',
+      name: '应用对话',
+      component: () => import('@/pages/AppChatPage.vue'),
+      meta: {
+        access: ACCESS_ENUM.USER,
+        fullContent: true,
+        hideFooter: true,
+      },
+    },
+
+    {
+      path: '/app/edit/:appId',
+      name: '应用编辑',
+      component: () => import('@/pages/AppEditPage.vue'),
+      meta: {
+        access: ACCESS_ENUM.USER,
+      },
+    },
+
+    {
+      path: '/app/detail/:appId',
+      name: '应用详情',
+      component: () => import('@/pages/AppDetailPage.vue'),
+    },
+
     {
       path: '/noAuth',
       name: '未授权页面',

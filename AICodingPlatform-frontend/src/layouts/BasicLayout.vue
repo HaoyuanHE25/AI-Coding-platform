@@ -1,21 +1,28 @@
 <template>
   <a-layout class="basic-layout">
-    <!-- 顶部导航栏 -->
     <GlobalHeader />
 
-    <!-- 主要内容区域 -->
-    <a-layout-content class="main-content">
+    <a-layout-content
+      class="main-content"
+      :class="{ 'main-content--full': isFullContent }"
+    >
       <router-view />
     </a-layout-content>
 
-    <!-- 底部版权信息 -->
-    <GlobalFooter />
+    <GlobalFooter v-if="!hideFooter" />
   </a-layout>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import GlobalHeader from '@/components/GlobalHeader.vue'
 import GlobalFooter from '@/components/GlobalFooter.vue'
+
+const route = useRoute()
+
+const isFullContent = computed(() => !!route.meta.fullContent)
+const hideFooter = computed(() => !!route.meta.hideFooter)
 </script>
 
 <style scoped>
@@ -34,5 +41,14 @@ import GlobalFooter from '@/components/GlobalFooter.vue'
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.main-content--full {
+  padding: 0;
+  margin: 0;
+  max-width: none;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
 }
 </style>

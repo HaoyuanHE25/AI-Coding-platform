@@ -1,4 +1,4 @@
-package com.haoyuan.aicodingplatform.model.dto;
+package com.haoyuan.aicodingplatform.model.dto.user;
 
 import lombok.Data;
 

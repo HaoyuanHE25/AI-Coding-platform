@@ -60,7 +60,7 @@
           </template>
         </template>
         <template v-else-if="column.dataIndex === 'createTime'">
-          {{ dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') }}
+          {{ formatDateTime(record.createTime) }}
         </template>
         <template v-else-if="column.key === 'action'">
           <div v-if="editableData[record.id]" class="editable-row-actions">
@@ -80,7 +80,7 @@
 import { listUserVoByPage, deleteUser, updateUser } from '@/api/userController'
 import { message } from 'ant-design-vue'
 import { ref, onMounted, reactive, computed } from 'vue'
-import dayjs from 'dayjs'
+import { formatDateTime } from '@/utils/date'
 
 const roleOptions = [
   { label: '管理员', value: 'admin' },

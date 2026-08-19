@@ -1,7 +1,9 @@
 package com.haoyuan.aicodingplatform.controller;
 
 import com.haoyuan.aicodingplatform.constant.AppConstant;
+import com.haoyuan.aicodingplatform.model.enums.CodeGenTypeEnum;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.HandlerMapping;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping("/static")
@@ -25,6 +28,8 @@ public class StaticResourceController {
     /**
      * 提供静态资源访问，支持目录重定向
      * 访问格式：http://localhost:8123/api/static/{deployKey}[/{fileName}]
+     * <p>
+     * 对于 Vue 项目等存在 dist 子目录的应用，自动从 dist 目录提供构建产物。
      */
     @GetMapping("/{deployKey}/**")
     public ResponseEntity<Resource> serveStaticResource(
@@ -44,8 +49,21 @@ public class StaticResourceController {
             if (resourcePath.equals("/")) {
                 resourcePath = "/index.html";
             }
+            // 构建基础目录：若存在 dist 子目录（Vue 项目构建产物），则从 dist 提供
+            String baseDir = PREVIEW_ROOT_DIR + "/" + deployKey;
+            File distDir = new File(baseDir, "dist");
+            if (distDir.exists() && distDir.isDirectory()) {
+                baseDir = distDir.getAbsolutePath();
+            } else if (isVueProject(deployKey) && "/index.html".equals(resourcePath)) {
+                // 未部署的 Vue 项目尚未构建完成（dist 不存在）：
+                // 原始 index.html 通过绝对路径引用 /src/main.js，浏览器无法解析会导致预览空白。
+                // 这里返回一个自动刷新的"构建中"占位页面，待异步构建完成 dist 出现后即可正常展示。
+                return ResponseEntity.ok()
+                        .header("Content-Type", "text/html; charset=UTF-8")
+                        .body(buildingInProgressResource());
+            }
             // 构建文件路径
-            String filePath = PREVIEW_ROOT_DIR + "/" + deployKey + resourcePath;
+            String filePath = baseDir + resourcePath;
             File file = new File(filePath);
             // 检查文件是否存在
             if (!file.exists()) {
@@ -71,5 +89,42 @@ public class StaticResourceController {
         if (filePath.endsWith(".png")) return "image/png";
         if (filePath.endsWith(".jpg")) return "image/jpeg";
         return "application/octet-stream";
+    }
+
+    /**
+     * 判断 deployKey 是否对应 Vue 项目（未部署预览时 deployKey 形如 vue_project_{appId}）
+     */
+    private boolean isVueProject(String deployKey) {
+        return deployKey != null
+                && deployKey.startsWith(CodeGenTypeEnum.VUE_PROJECT.getValue() + "_");
+    }
+
+    /**
+     * "构建中"占位页面：iframe 每 3 秒自动刷新，直到 Vue 项目异步构建完成、dist 目录出现后即可展示真实页面。
+     */
+    private Resource buildingInProgressResource() {
+        String html = """
+                <!DOCTYPE html>
+                <html lang="zh-CN">
+                <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="refresh" content="3">
+                <title>构建中</title>
+                <style>
+                body{font-family:Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;margin:0;background:#f5f7fa;color:#333}
+                .spinner{width:44px;height:44px;border:4px solid #e6e6e6;border-top-color:#1677ff;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:18px}
+                @keyframes spin{to{transform:rotate(360deg)}}
+                h3{margin:0 0 6px;font-size:18px}
+                p{margin:0;color:#888;font-size:13px}
+                </style>
+                </head>
+                <body>
+                <div class="spinner"></div>
+                <h3>正在构建项目...</h3>
+                <p>构建完成后将自动展示，请稍候</p>
+                </body>
+                </html>
+                """;
+        return new ByteArrayResource(html.getBytes(StandardCharsets.UTF_8));
     }
 }

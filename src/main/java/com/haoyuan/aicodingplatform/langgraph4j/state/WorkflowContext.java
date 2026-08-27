@@ -1,5 +1,6 @@
 package com.haoyuan.aicodingplatform.langgraph4j.state;
 
+import com.haoyuan.aicodingplatform.langgraph4j.model.ImageCollectionPlan;
 import com.haoyuan.aicodingplatform.langgraph4j.model.ImageResource;
 import com.haoyuan.aicodingplatform.langgraph4j.model.QualityResult;
 import com.haoyuan.aicodingplatform.model.enums.CodeGenTypeEnum;
@@ -23,6 +24,19 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WorkflowContext implements Serializable {
+    /**
+     * 图片收集计划
+     */
+    private ImageCollectionPlan imageCollectionPlan;
+
+
+    /**
+     * 并发图片收集的中间结果字段
+     */
+    private List<ImageResource> contentImages;
+    private List<ImageResource> illustrations;
+    private List<ImageResource> diagrams;
+    private List<ImageResource> logos;
 
     /**
      * WorkflowContext 在 MessagesState 中的存储key

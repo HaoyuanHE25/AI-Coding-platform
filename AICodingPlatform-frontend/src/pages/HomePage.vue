@@ -14,7 +14,7 @@ const router = useRouter()
 const route = useRoute()
 const { isLoggedIn, isAdmin, goLogin, loginUserStore } = useAuth()
 
-const PAGE_SIZE = 20
+const PAGE_SIZE = 8
 const HOT_PROMPTS = [
   '请帮我生成一个响应式个人博客网站，包含首页文章列表、文章详情页、关于我页面、标签分类和搜索功能，整体采用简洁的极简设计风格，配色以白色和深蓝色为主',
   '创建一个在线电商商城，包含商品展示首页、商品分类导航、商品详情页、购物车和结算功能，支持商品筛选和搜索，界面采用现代简约风格，突出商品图片展示',
@@ -555,10 +555,10 @@ onMounted(() => {
 .home-section :deep(.ant-input-search .ant-input) {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  color: #000;
 }
 .home-section :deep(.ant-input-search .ant-input::placeholder) {
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(0, 0, 0, 0.45);
 }
 
 .home-login-prompt {

@@ -9,6 +9,8 @@ import com.haoyuan.aicodingplatform.ai.model.MultiFileCodeResult;
 import com.haoyuan.aicodingplatform.ai.model.message.AiResponseMessage;
 import com.haoyuan.aicodingplatform.ai.model.message.ToolExecutedMessage;
 import com.haoyuan.aicodingplatform.ai.model.message.ToolRequestMessage;
+import com.haoyuan.aicodingplatform.constant.AppConstant;
+import com.haoyuan.aicodingplatform.core.builder.VueProjectBuilder;
 import com.haoyuan.aicodingplatform.core.parser.CodeParserExecutor;
 import com.haoyuan.aicodingplatform.core.saver.CodeFileSaverExecutor;
 import com.haoyuan.aicodingplatform.exception.BusinessException;
@@ -38,6 +40,9 @@ public class AiCodeGeneratorFacade {
 
     @Resource
     private AiCodeGeneratorServiceFactory aiCodeGeneratorServiceFactory;
+
+    @Resource
+    private VueProjectBuilder vueProjectBuilder;
 
     /**
      * 通用流式代码处理方法：收集流 → 解析 → 保存（无代码则跳过保存）
@@ -129,7 +134,8 @@ public class AiCodeGeneratorFacade {
             );
 
             case VUE_PROJECT ->  processTokenStream(
-                    aiCodeGeneratorService.generateVueProjectCodeStream(appId, userMessage)
+                    aiCodeGeneratorService.generateVueProjectCodeStream(appId, userMessage),
+                    appId
             );
             default -> throw new BusinessException(ErrorCode.SYSTEM_ERROR,
                     "不支持的生成类型：" + codeGenTypeEnum.getValue());
@@ -142,9 +148,10 @@ public class AiCodeGeneratorFacade {
      * 将 TokenStream 转换为 Flux<String>，并传递工具调用信息
      *
      * @param tokenStream TokenStream 对象
+     * @param appId       应用 ID
      * @return Flux<String> 流式响应
      */
-    private Flux<String> processTokenStream(TokenStream tokenStream) {
+    private Flux<String> processTokenStream(TokenStream tokenStream, Long appId) {
         return Flux.create(sink -> {
             tokenStream.onPartialResponse((String partialResponse) -> {
                         AiResponseMessage aiResponseMessage = new AiResponseMessage(partialResponse);
@@ -159,8 +166,12 @@ public class AiCodeGeneratorFacade {
                         sink.next(JSONUtil.toJsonStr(toolExecutedMessage));
                     })
                     .onCompleteResponse((ChatResponse response) -> {
+                        // 执行 Vue 项目构建（同步执行，确保预览时项目已就绪）
+                        String projectPath = AppConstant.CODE_OUTPUT_ROOT_DIR + File.separator + "vue_project_" + appId;
+                        vueProjectBuilder.buildProject(projectPath);
                         sink.complete();
                     })
+
                     .onError((Throwable error) -> {
                         error.printStackTrace();
                         sink.error(error);

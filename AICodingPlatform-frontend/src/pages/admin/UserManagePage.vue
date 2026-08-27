@@ -24,31 +24,35 @@
         <template v-if="column.dataIndex === 'userAvatar'">
           <a-input
             v-if="editableData[record.id]"
-            v-model:value="editableData[record.id].userAvatar"
+            :value="editableData[record.id]?.userAvatar"
             placeholder="头像 URL"
+            @update:value="(val: string) => setEditableField(record.id, 'userAvatar', val)"
           />
           <a-image v-else :src="record.userAvatar" :width="120" />
         </template>
         <template v-else-if="column.dataIndex === 'userName'">
           <a-input
             v-if="editableData[record.id]"
-            v-model:value="editableData[record.id].userName"
+            :value="editableData[record.id]?.userName"
+            @update:value="(val: string) => setEditableField(record.id, 'userName', val)"
           />
           <span v-else>{{ record.userName }}</span>
         </template>
         <template v-else-if="column.dataIndex === 'userProfile'">
           <a-input
             v-if="editableData[record.id]"
-            v-model:value="editableData[record.id].userProfile"
+            :value="editableData[record.id]?.userProfile"
+            @update:value="(val: string) => setEditableField(record.id, 'userProfile', val)"
           />
           <span v-else>{{ record.userProfile }}</span>
         </template>
         <template v-else-if="column.dataIndex === 'userRole'">
           <a-select
             v-if="editableData[record.id]"
-            v-model:value="editableData[record.id].userRole"
+            :value="editableData[record.id]?.userRole"
             style="width: 120px"
             :options="roleOptions"
+            @update:value="(val: string) => setEditableField(record.id, 'userRole', val)"
           />
           <template v-else>
             <div v-if="record.userRole === 'admin'">
@@ -134,6 +138,18 @@ const searchParams = reactive<API.UserQueryRequest>({
 
 // 正在编辑的行数据，按记录 id 索引
 const editableData = reactive<Record<number, API.UserUpdateRequest>>({})
+
+// 更新指定行的编辑字段（索引结果可能不存在，需做空值保护）
+const setEditableField = (
+  id: number,
+  field: 'userAvatar' | 'userName' | 'userProfile' | 'userRole',
+  value: string,
+) => {
+  const target = editableData[id]
+  if (target) {
+    target[field] = value
+  }
+}
 
 // 获取数据
 const fetchData = async () => {

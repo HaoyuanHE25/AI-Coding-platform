@@ -20,6 +20,10 @@ public class BaseResponse<T> implements Serializable {
 
     private String message;
 
+    public BaseResponse() {
+        // Jackson 反序列化需要无参构造函数
+    }
+
     public BaseResponse(int code, T data, String message) {
         this.code = code;
         this.data = data;

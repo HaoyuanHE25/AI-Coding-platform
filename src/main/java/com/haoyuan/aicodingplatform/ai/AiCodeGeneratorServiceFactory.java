@@ -2,13 +2,14 @@ package com.haoyuan.aicodingplatform.ai;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.haoyuan.aicodingplatform.ai.guardrail.PromptSafetyInputGuardrail;
+import com.haoyuan.aicodingplatform.ai.guardrail.RetryOutputGuardrail;
 import com.haoyuan.aicodingplatform.ai.tools.*;
 import com.haoyuan.aicodingplatform.exception.BusinessException;
 import com.haoyuan.aicodingplatform.exception.ErrorCode;
 import com.haoyuan.aicodingplatform.model.enums.CodeGenTypeEnum;
 import com.haoyuan.aicodingplatform.service.ChatHistoryService;
 import com.haoyuan.aicodingplatform.utils.SpringContextUtil;
-import dev.langchain4j.agent.tool.ToolExecutionRequest;
 import dev.langchain4j.community.store.memory.chat.redis.RedisChatMemoryStore;
 import dev.langchain4j.data.message.ToolExecutionResultMessage;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
@@ -17,7 +18,6 @@ import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.service.AiServices;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.Duration;
@@ -116,6 +116,8 @@ public class AiCodeGeneratorServiceFactory {
                         .hallucinatedToolNameStrategy(toolExecutionRequest -> ToolExecutionResultMessage.from(
                                 toolExecutionRequest, "Error: there is no tool called " + toolExecutionRequest.name()
                         ))
+                        .inputGuardrails(new PromptSafetyInputGuardrail())
+//                        .outputGuardrails(new RetryOutputGuardrail())
                         .build();
             }
             case HTML, MULTI_FILE -> {
@@ -124,6 +126,8 @@ public class AiCodeGeneratorServiceFactory {
                         .chatModel(chatModel)
                         .streamingChatModel(openAiStreamingChatModel)
                         .chatMemory(chatMemory)
+                        .inputGuardrails(new PromptSafetyInputGuardrail())
+//                        .outputGuardrails(new RetryOutputGuardrail())
                         .build();
             }
             default -> throw new BusinessException(ErrorCode.SYSTEM_ERROR,

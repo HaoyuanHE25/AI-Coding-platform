@@ -4,7 +4,7 @@ declare namespace API {
   }
 
   type AppAdminUpdateRequest = {
-    id?: number
+    id?: number | string
     appName?: string
     cover?: string
     priority?: number
@@ -30,12 +30,12 @@ declare namespace API {
   }
 
   type AppUpdateRequest = {
-    id?: number
+    id?: number | string
     appName?: string
   }
 
   type AppVO = {
-    id?: number
+    id?: number | string
     appName?: string
     cover?: string
     initPrompt?: string
@@ -139,7 +139,7 @@ declare namespace API {
   }
 
   type DeleteRequest = {
-    id?: number
+    id?: number | string
   }
 
   type downloadAppCodeParams = {
@@ -147,11 +147,11 @@ declare namespace API {
   }
 
   type getAppVOByIdByAdminParams = {
-    id: number
+    id: number | string
   }
 
   type getAppVOByIdParams = {
-    id: number
+    id: number | string
   }
 
   type getUserByIdParams = {

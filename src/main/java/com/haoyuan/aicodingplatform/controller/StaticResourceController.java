@@ -52,8 +52,14 @@ public class StaticResourceController {
             // 构建基础目录：若存在 dist 子目录（Vue 项目构建产物），则从 dist 提供
             String baseDir = PREVIEW_ROOT_DIR + "/" + deployKey;
             File distDir = new File(baseDir, "dist");
-            if (distDir.exists() && distDir.isDirectory()) {
-                baseDir = distDir.getAbsolutePath();
+            String filePath;
+            if (resourcePath.startsWith("/dist/")) {
+                // 前端预览 URL 已带 /dist/...（getStaticPreviewUrl 对 Vue 会追加 dist/index.html），
+                // 直接基于项目根目录拼接，避免与下方自动切 dist 重复导致 dist/dist 路径错误。
+                filePath = baseDir + resourcePath;
+            } else if (distDir.exists() && distDir.isDirectory()) {
+                // URL 未带 dist：Vue 项目自动从 dist 目录提供构建产物
+                filePath = distDir.getAbsolutePath() + resourcePath;
             } else if (isVueProject(deployKey) && "/index.html".equals(resourcePath)) {
                 // 未部署的 Vue 项目尚未构建完成（dist 不存在）：
                 // 原始 index.html 通过绝对路径引用 /src/main.js，浏览器无法解析会导致预览空白。
@@ -61,9 +67,10 @@ public class StaticResourceController {
                 return ResponseEntity.ok()
                         .header("Content-Type", "text/html; charset=UTF-8")
                         .body(buildingInProgressResource());
+            } else {
+                // HTML / 多文件项目：直接从项目根目录提供
+                filePath = baseDir + resourcePath;
             }
-            // 构建文件路径
-            String filePath = baseDir + resourcePath;
             File file = new File(filePath);
             // 检查文件是否存在
             if (!file.exists()) {

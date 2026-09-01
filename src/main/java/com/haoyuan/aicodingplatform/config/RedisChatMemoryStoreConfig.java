@@ -25,9 +25,14 @@ public class RedisChatMemoryStoreConfig {
 
     @Bean
     public RedisChatMemoryStore redisChatMemoryStore() {
+        // 注意：langchain4j-community-redis 1.1.0-beta7 的 RedisChatMemoryStore
+        // 仅当 user 非空时才会使用 password（否则 Jedis 不带认证连接）。
+        // 因此有密码时需指定 Redis 默认用户 "default"；本地无密码则不设 user。
+        boolean hasPassword = password != null && !password.isEmpty();
         return RedisChatMemoryStore.builder()
                 .host(host)
                 .port(port)
+                .user(hasPassword ? "default" : null)
                 .password(password)
                 .ttl(ttl)
                 .build();

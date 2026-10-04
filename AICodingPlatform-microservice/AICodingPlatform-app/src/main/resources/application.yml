@@ -1,0 +1,67 @@
+spring:
+  application:
+    # 微服务标识：不能再与单体/其他服务同名
+    name: aicoding-platform-app
+    # session 配置
+  session:
+    store-type: redis
+    # session 30 天过期
+    timeout: 2592000
+  # mysql
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ai_coding_platform
+    username: root
+    password: 123456
+  # redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      password:
+      ttl: 3600
+  profiles:
+    active: local
+server:
+  port: 8123
+  servlet:
+    context-path: /api
+    # cookie 30 天过期
+    session:
+      cookie:
+        max-age: 2592000
+# springdoc-openapi
+springdoc:
+  group-configs:
+    - group: 'default'
+      packages-to-scan: com.haoyuan.aicodingplatformapp.controller
+# knife4j
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+# actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always
+# Dubbo
+dubbo:
+  registry:
+    address: nacos://127.0.0.1:8848?username=nacos&password=nacos
+    register-mode: instance
+  protocol:
+    name: tri
+    port: 50053
+  application:
+    qos-enable: false   # 本地多服务同时启动会端口冲突，禁用 QoS 管理端口
+  consumer:
+    timeout: 120000
+  provider:
+    timeout: 120000
+

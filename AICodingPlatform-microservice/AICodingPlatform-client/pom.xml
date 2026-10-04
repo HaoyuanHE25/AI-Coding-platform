@@ -17,4 +17,23 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.haoyuan</groupId>
+            <artifactId>AICodingPlatform-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.haoyuan</groupId>
+            <artifactId>AICodingPlatform-model</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <!-- InnerUserService.getLoginUser(HttpServletRequest)：契约模块只需要 servlet API，不需要 Web 容器 -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
 </project>

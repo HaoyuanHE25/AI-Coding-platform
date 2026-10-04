@@ -6,7 +6,7 @@ import com.qcloud.cos.model.PutObjectRequest;
 import com.qcloud.cos.model.PutObjectResult;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -16,7 +16,12 @@ import java.io.File;
  *
  */
 @Component
-@ConditionalOnBean(CosClientConfig.class)
+@ConditionalOnExpression(
+        "'${cos.client.host:}' != '' and '${cos.client.secretId:}' != '' " +
+        "and '${cos.client.secretKey:}' != '' and '${cos.client.region:}' != '' " +
+        "and '${cos.client.bucket:}' != '' " +
+        "and !'${cos.client.host:}'.startsWith('your-')"
+)
 @Slf4j
 public class CosManager {
 

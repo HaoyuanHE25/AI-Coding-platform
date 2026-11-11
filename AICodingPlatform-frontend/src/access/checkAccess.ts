@@ -6,7 +6,10 @@ import ACCESS_ENUM from "@/access/accessEnum";
  * @param needAccess 需要有的权限
  * @return boolean 有无权限
  */
-const checkAccess = (loginUser: any, needAccess = ACCESS_ENUM.NO_LOGIN) => {
+const checkAccess = (
+  loginUser: API.LoginUserVO | null | undefined,
+  needAccess = ACCESS_ENUM.NO_LOGIN,
+) => {
   // 获取当前登录用户具有的权限（如果没有 loginUser，则表示未登录）
   const loginUserAccess = loginUser?.userRole ?? ACCESS_ENUM.NO_LOGIN;
   if (needAccess === ACCESS_ENUM.NO_LOGIN) {

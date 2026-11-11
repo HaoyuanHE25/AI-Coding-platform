@@ -1,0 +1,30 @@
+# === 本地私有配置（含密钥）===
+# 明文密钥只允许出现在本地磁盘上的私有文件中，禁止入库
+**/application-local.yml
+**/application-*-local.yml
+**/application-secrets.yml
+**/.env
+**/.env.local
+
+# === IDE ===
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+
+# === Maven ===
+**/target/
+*.class
+.mvn/wrapper/maven-wrapper.jar
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === 临时文件 ===
+*.log
+*.tmp
+*.bak

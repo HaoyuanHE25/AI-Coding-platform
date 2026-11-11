@@ -5,6 +5,7 @@ import { siteConfig, menuItems } from '@/config'
 import type { MenuItem, MenuItemMeta } from '@/config'
 import { userLogout } from '@/api/userController'
 import { message } from 'ant-design-vue'
+import { LogoutOutlined, MenuOutlined } from '@ant-design/icons-vue'
 import { useLoginUserStore } from '@/stores/LoginUser'
 import checkAccess from '@/access/checkAccess'
 import ACCESS_ENUM from '@/access/accessEnum'
@@ -194,7 +195,17 @@ const currentUser = computed(() => loginUserStore.loginUser)
         @click="handleMenuClick"
       />
       <div class="global-header__drawer-actions">
-        <a-button type="primary" block @click="handleLogin">登录</a-button>
+        <template v-if="currentUser.id">
+          <div class="global-header__drawer-user">
+            <a-avatar :src="currentUser.userAvatar" size="small" />
+            <span>{{ currentUser.userName ?? '无名' }}</span>
+          </div>
+          <a-button block @click="handleUserCenter">个人中心</a-button>
+          <a-button danger block class="global-header__drawer-logout" @click="handleLogout">
+            退出登录
+          </a-button>
+        </template>
+        <a-button v-else type="primary" block @click="handleLogin">登录</a-button>
       </div>
     </a-drawer>
   </a-layout-header>
@@ -258,5 +269,19 @@ const currentUser = computed(() => loginUserStore.loginUser)
 
 .global-header__drawer-actions {
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.global-header__drawer-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.global-header__drawer-logout {
+  margin-left: 0 !important;
 }
 </style>

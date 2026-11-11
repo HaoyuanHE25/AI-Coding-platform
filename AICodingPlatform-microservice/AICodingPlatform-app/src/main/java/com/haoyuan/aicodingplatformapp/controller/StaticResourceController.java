@@ -71,7 +71,12 @@ public class StaticResourceController {
                 // HTML / 多文件项目：直接从项目根目录提供
                 filePath = baseDir + resourcePath;
             }
-            File file = new File(filePath);
+            File file = new File(filePath).getCanonicalFile();
+            // 防止 ../ 路径穿越：确保最终文件始终位于应用输出根目录内
+            String rootPath = new File(PREVIEW_ROOT_DIR).getCanonicalPath();
+            if (!file.getPath().startsWith(rootPath + File.separator)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
             // 检查文件是否存在
             if (!file.exists()) {
                 return ResponseEntity.notFound().build();

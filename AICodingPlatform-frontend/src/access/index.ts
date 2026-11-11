@@ -18,7 +18,7 @@ let firstFetchLoginUser = true
  * 未登录访问需登录页 → 跳转登录页（携带 redirect）
  * 已登录但权限不足 → 跳转无权限页
  */
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to) => {
   const loginUserStore = useLoginUserStore()
 
   // 首次进入（页面刷新）时，等待后端返回登录用户信息后再做校验
@@ -32,22 +32,19 @@ router.beforeEach(async (to, from, next) => {
 
   // 无需登录即可访问
   if (needAccess === ACCESS_ENUM.NO_LOGIN) {
-    next()
-    return
+    return true
   }
 
   // 权限不足
   if (!checkAccess(loginUser, needAccess)) {
-    const isLogin = loginUser?.userRole && loginUser.userRole !== ACCESS_ENUM.NO_LOGIN;
+    const isLogin = loginUser?.userRole && loginUser.userRole !== ACCESS_ENUM.NO_LOGIN
     if (!isLogin) {
       message.error('请先登录')
-      next(`/user/login?redirect=${to.fullPath}`)
-    } else {
-      message.error('没有权限')
-      next('/noAuth')
+      return `/user/login?redirect=${to.fullPath}`
     }
-    return
+    message.error('没有权限')
+    return '/noAuth'
   }
 
-  next()
+  return true
 })

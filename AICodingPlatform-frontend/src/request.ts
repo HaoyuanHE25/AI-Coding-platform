@@ -36,10 +36,10 @@ myAxios.interceptors.response.use(
         (p) => currentPath === p || currentPath.startsWith(p + '/'),
       )
       // 获取请求配置中是否标记了跳过鉴权重定向
-      const skipRedirect = (response.config as any)?.skipAuthRedirect
+      const skipRedirect = (response.config as { skipAuthRedirect?: boolean })?.skipAuthRedirect
 
       if (
-        !response.request.responseURL.includes('user/get/login') &&
+        !response.request?.responseURL?.includes('user/get/login') &&
         !isPublicPage &&
         !skipRedirect
       ) {

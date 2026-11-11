@@ -208,6 +208,8 @@ public class UserController {
         ThrowUtils.throwIf(userQueryRequest == null, ErrorCode.PARAMS_ERROR);
         long pageNum = userQueryRequest.getPageNum();
         long pageSize = userQueryRequest.getPageSize();
+        ThrowUtils.throwIf(pageNum <= 0 || pageSize <= 0 || pageSize > 50,
+                ErrorCode.PARAMS_ERROR, "分页参数不合法");
         Page<User> userPage = userService.page(Page.of(pageNum, pageSize),
                 userService.getQueryWrapper(userQueryRequest));
         // 数据脱敏

@@ -106,10 +106,9 @@ const createAndGo = async (prompt: string) => {
     const res = await addApp({ initPrompt: prompt.trim() })
     if (res.data.code === 0 && res.data.data != null) {
       // 兼容后端返回 { data: { id: "123" } }、{ data: { id: 123 } } 或 { data: "123" }
+      const created = res.data.data as { id?: number | string; appId?: number | string }
       const rawId =
-        typeof res.data.data === 'object'
-          ? ((res.data.data as any).id ?? (res.data.data as any).appId)
-          : res.data.data
+        typeof res.data.data === 'object' ? (created.id ?? created.appId) : res.data.data
       const appId = String(rawId)
       if (!appId) {
         message.error('创建失败：无效的应用 ID')

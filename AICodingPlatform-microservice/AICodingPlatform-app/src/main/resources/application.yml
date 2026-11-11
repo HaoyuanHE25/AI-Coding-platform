@@ -31,6 +31,9 @@ server:
     session:
       cookie:
         max-age: 2592000
+# 应用部署访问地址（含静态资源前缀），生产环境必须通过 CODE_DEPLOY_HOST 覆盖
+code:
+  deploy-host: ${CODE_DEPLOY_HOST:http://localhost:8123/api/static}
 # springdoc-openapi
 springdoc:
   group-configs:

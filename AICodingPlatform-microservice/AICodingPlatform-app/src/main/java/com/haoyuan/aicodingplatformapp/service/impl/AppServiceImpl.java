@@ -55,6 +55,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppService {
 
+    // 允许排序的字段白名单，防止 sortField 被拼接进 SQL 造成注入
+    private static final Set<String> ALLOWED_SORT_FIELDS =
+            Set.of("id", "appName", "cover", "codeGenType", "deployKey", "priority", "userId", "createTime", "updateTime");
+
     @Value("${code.deploy-host:http://localhost}")
     private String deployHost;
 
@@ -138,6 +142,7 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         Long userId = appQueryRequest.getUserId();
         String sortField = appQueryRequest.getSortField();
         String sortOrder = appQueryRequest.getSortOrder();
+        boolean validSort = sortField != null && ALLOWED_SORT_FIELDS.contains(sortField);
         return QueryWrapper.create()
                 .eq("id", id)
                 .like("appName", appName)
@@ -147,7 +152,7 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
                 .eq("deployKey", deployKey)
                 .eq("priority", priority)
                 .eq("userId", userId)
-                .orderBy(sortField, "ascend".equals(sortOrder));
+                .orderBy(validSort ? sortField : "createTime", validSort && "ascend".equals(sortOrder));
     }
 
     @Override

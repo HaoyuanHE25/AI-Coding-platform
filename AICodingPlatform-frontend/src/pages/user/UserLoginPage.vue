@@ -54,11 +54,11 @@ const resolveRedirect = () => {
  * 用户登录提交
  * @param values 登录表单数据
  */
-const handleSubmit = async (values: any) => {
+const handleSubmit = async (values: API.UserLoginRequest) => {
   const res = await userLogin(values)
   // 登录成功
   if (res.data.code === 0 && res.data.data) {
-    await loginUserStore.fetchLoginUser()
+    await loginUserStore.fetchLoginUser(true)
     message.success('登录成功')
     const target = resolveRedirect()
     const prompt = route.query.prompt

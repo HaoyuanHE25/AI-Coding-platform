@@ -53,7 +53,7 @@ const router = useRouter()
 /**
  * 校验确认密码是否与用户密码一致
  */
-const validateCheckPassword = async (_rule: any, value: string) => {
+const validateCheckPassword = async (_rule: unknown, value: string) => {
   if (value !== formState.userPassword) {
     return Promise.reject('两次输入的密码不一致')
   }
@@ -64,7 +64,7 @@ const validateCheckPassword = async (_rule: any, value: string) => {
  * 用户注册提交
  * @param values 注册表单数据
  */
-const handleSubmit = async (values: any) => {
+const handleSubmit = async (values: API.UserRegisterRequest) => {
   const res = await register(values)
   // 注册成功
   if (res.data.code === 0 && res.data.data) {

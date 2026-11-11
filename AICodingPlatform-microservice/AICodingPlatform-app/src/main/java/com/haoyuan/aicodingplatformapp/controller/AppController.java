@@ -262,6 +262,8 @@ public class AppController {
         ThrowUtils.throwIf(appQueryRequest == null, ErrorCode.PARAMS_ERROR);
         long pageNum = appQueryRequest.getPageNum();
         long pageSize = appQueryRequest.getPageSize();
+        ThrowUtils.throwIf(pageNum <= 0 || pageSize <= 0 || pageSize > 50,
+                ErrorCode.PARAMS_ERROR, "分页参数不合法");
         QueryWrapper queryWrapper = appService.getQueryWrapper(appQueryRequest);
         Page<App> appPage = appService.page(Page.of(pageNum, pageSize), queryWrapper);
         // 数据封装

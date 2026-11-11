@@ -32,6 +32,10 @@ import static com.haoyuan.aicodingplatform.constant.UserConstant.USER_LOGIN_STAT
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>  implements UserService {
 
+    // 允许排序的字段白名单，防止 sortField 被拼接进 SQL 造成注入
+    private static final java.util.Set<String> ALLOWED_SORT_FIELDS =
+            java.util.Set.of("id", "userAccount", "userName", "userRole", "createTime", "updateTime");
+
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {
         // 1. 校验
@@ -186,13 +190,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>  implements U
         String userRole = userQueryRequest.getUserRole();
         String sortField = userQueryRequest.getSortField();
         String sortOrder = userQueryRequest.getSortOrder();
+        boolean validSort = sortField != null && ALLOWED_SORT_FIELDS.contains(sortField);
         return QueryWrapper.create()
                 .eq("id", id)
                 .eq("userRole", userRole)
                 .like("userAccount", userAccount)
                 .like("userName", userName)
                 .like("userProfile", userProfile)
-                .orderBy(sortField, "ascend".equals(sortOrder));
+                .orderBy(validSort ? sortField : "createTime", validSort && "ascend".equals(sortOrder));
     }
 
 }

@@ -36,6 +36,10 @@ import java.util.List;
 @Slf4j
 public class ChatHistoryServiceImpl extends ServiceImpl<ChatHistoryMapper, ChatHistory>  implements ChatHistoryService{
 
+    // 允许排序的字段白名单，防止 sortField 被拼接进 SQL 造成注入
+    private static final java.util.Set<String> ALLOWED_SORT_FIELDS =
+            java.util.Set.of("id", "appId", "userId", "messageType", "createTime", "updateTime");
+
     @Resource
     @Lazy
     private AppService appService;
@@ -136,7 +140,7 @@ public class ChatHistoryServiceImpl extends ServiceImpl<ChatHistoryMapper, ChatH
             queryWrapper.lt("createTime", lastCreateTime);
         }
         // 排序
-        if (StrUtil.isNotBlank(sortField)) {
+        if (StrUtil.isNotBlank(sortField) && ALLOWED_SORT_FIELDS.contains(sortField)) {
             queryWrapper.orderBy(sortField, "ascend".equals(sortOrder));
         } else {
             // 默认按创建时间降序排列
